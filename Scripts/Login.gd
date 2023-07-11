@@ -23,16 +23,20 @@ func _on_Submit_pressed():
 		"Username": UsernameField.text,
 		"Password": PasswordField.text
 	}
-	Request.request(Host + "/register", [], false, HTTPClient.METHOD_POST, to_json(Payload))
+	Request.request(Host + "/login", [], false, HTTPClient.METHOD_POST, to_json(Payload))
 
 
 
 func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 	match response_code:
 		200:
-			Notification.set_text("Registered!")
+			Notification.set_text("Logged in!")
+			
+			var User = JSON.parse(body.get_string_from_utf8()).result["result"]
+			print(User)
+		
+		404:
+			Notification.set_text("User not found.")
 		
 		403:
-			var Message = JSON.parse(body.get_string_from_utf8()).result
-			Message = Message["result"]
-			Notification.set_text(Message)
+			Notification.set_text("Invalid password.")
